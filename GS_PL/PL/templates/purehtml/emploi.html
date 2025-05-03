@@ -1,0 +1,36 @@
+<h2>Emploi du temps</h2>
+
+{% for filiere in filieres %}
+    <h3>Filière : {{ filiere.nom }}   ---------------------   Semestre : {{ filiere.semestre }}</h3>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Jour</th>
+                    <th>Heure</th>
+                    <th>Module</th>
+                    <th>Groupe</th>
+                    <th>Salle</th>
+                    <th>Enseignant</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for seance in seances %}
+                   {% if seance.groupe.filiere == filiere %}
+                <tr>
+                    <td>{{ seance.jour }}</td>
+                    <td>{{ seance.heure_debut }} - {{ seance.heure_fin }}</td>
+                    <td>{{ seance.module.nom }}</td>
+                    <td>{{ seance.groupe.nom }}({{ seance.groupe.filiere.semestre }})</td>
+                    <td>{{ seance.salle.nom }} ({{ seance.type_seance }})</td>
+                    <td>{{ seance.enseignant.nom }}</td>
+                </tr>
+                   {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>    
+{% endfor %}
+
+
+

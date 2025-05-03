@@ -1,0 +1,51 @@
+
+<h1>Bienvenue dans le système de planification</h1>
+<h2>Ajouter des entités</h2>
+<ul>
+  <li><a href="{% url 'ajouter_filiere' %}">Ajouter Filière</a></li>
+  <li><a href="{% url 'ajouter_enseignant' %}">Ajouter Enseignant</a></li>
+  <li><a href="{% url 'ajouter_module' %}">Ajouter Module</a></li>
+  <li><a href="{% url 'ajouter_salle' %}">Ajouter Salle</a></li>
+  <li><a href="{% url 'ajouter_groupe' %}">Ajouter Groupe</a></li>
+  <li><a href="{% url 'ajouter_seance' %}">Ajouter Séance</a></li>
+  <li><a href="{% url 'ajouter_disponibilite_enseignant' %}"> disponibilité enseignant</a></li>
+  <li><a href="{% url 'ajouter_disponibilite_salle' %}"> disponibilité salle</a>
+</li>
+</ul>
+
+
+
+
+<form action="{% url 'generer_groupes' %}" method="post" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit"> Générer Groupes TD/TP</button>
+</form>
+
+
+<form action="{% url 'generer_emploi' %}" method="post" style="display:inline;">
+  {% csrf_token %}
+  <button type="submit">Générer Emploi du temps</button>
+</form><br>
+
+<a href="{% url 'emploi' %}">Voir emploi du temps</a> 
+
+<a href="{% url 'export_excel' %}">Exporter Excel</a> |
+<a href="{% url 'export_pdf' %}">Exporter PDF</a>
+
+<h1>Système de planification - Accueil</h1>
+<ul>
+  <li><a href="{% url 'liste_filieres' %}">Liste des filières</a></li>
+  <li><a href="{% url 'liste_enseignants' %}"> Liste des enseignants</a></li>
+  <li><a href="{% url 'liste_modules' %}"> Liste des modules</a></li>
+  <li><a href="{% url 'liste_groupes' %}">Liste des groupes</a></li>
+  <li><a href="{% url 'liste_seances' %}">Liste des Séances</a></li>
+  <li><a href="{% url 'liste_salles' %}">Liste des Salles</a></li>
+
+  
+</ul>
+<nav>
+  <ul>
+    <li><a href="{% url 'liste_disponibilites_enseignants' %}">Dispo Enseignants</a></li>
+    <li><a href="{% url 'liste_disponibilites_salles' %}">Dispo Salles</a></li>
+  </ul>
+</nav>

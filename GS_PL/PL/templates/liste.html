@@ -1,0 +1,28 @@
+{% load custom_tags %}
+<h2>Liste des {{ titre }}</h2>
+
+<table border="1">
+  <thead>
+    <tr>
+      {% for champ in entites.0.db.fields %}
+        <th>{{ champ.verbose_name }}</th>
+      {% endfor %}
+      <td>{{ titre }}</td>
+      <td>Actions</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entite in entites %}
+      <tr>
+        {% for champ in entite.db.fields %}
+          <th>{{ entite|attr:champ.name }}</th>
+        {% endfor %}
+        <td>{{entite}}</td>
+        <td>
+          <a href="{% url 'modifier_'|add:titre|lower pk=entite.pk %}">Modifier</a> |
+          <a href="{% url 'supprimer_'|add:titre|lower pk=entite.pk %}">Supprimer</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
