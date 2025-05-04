@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Système de Planification</title>
+    <!-- Lien vers le CDN Bootstrap -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Bienvenue dans le système de planification</h1>
+
+    <h2 class="mb-4">Ajouter des entités</h2>
+    <ul class="list-group mb-4">
+        <li class="list-group-item"><a href="{% url 'ajouter_filiere' %}">Ajouter Filière</a></li>
+        <li class="list-group-item"><a href="{% url 'ajouter_enseignant' %}">Ajouter Enseignant</a></li>
+        <li class="list-group-item"><a href="{% url 'ajouter_module' %}">Ajouter Module</a></li>
+        <li class="list-group-item"><a href="{% url 'ajouter_salle' %}">Ajouter Salle</a></li>
+        <li class="list-group-item"><a href="{% url 'ajouter_groupe' %}">Ajouter Groupe</a></li>
+        <li class="list-group-item"><a href="{% url 'ajouter_seance' %}">Ajouter Séance</a></li>
+        <li class="list-group-item"><a href="{% url 'ajouter_disponibilite_enseignant' %}">Disponibilité Enseignant</a></li>
+        <li class="list-group-item"><a href="{% url 'ajouter_disponibilite_salle' %}">Disponibilité Salle</a></li>
+    </ul>
+
+    
+    <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-4">
+
+      <form action="{% url 'generer_groupes' %}" method="post" class="m-0">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Générer Groupes TD/TP</button>
+      </form>
+    
+      <form action="{% url 'generer_emploi' %}" method="post" class="m-0">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Générer Emploi du temps</button>
+      </form>
+    
+      <a href="{% url 'emploi' %}" class="btn btn-info">Voir emploi du temps</a>
+    
+      <a href="{% url 'export_excel' %}" class="btn btn-warning">Exporter Excel</a>
+    
+      <a href="{% url 'export_pdf' %}" class="btn btn-danger">Exporter PDF</a>
+    
+    </div>
+    
+
+    <h1 class="text-center mt-5 mb-4">Système de planification - Accueil</h1>
+    <ul class="list-group mb-4">
+        <li class="list-group-item"><a href="{% url 'liste_filieres' %}">Liste des filières</a></li>
+        <li class="list-group-item"><a href="{% url 'liste_enseignants' %}">Liste des enseignants</a></li>
+        <li class="list-group-item"><a href="{% url 'liste_modules' %}">Liste des modules</a></li>
+        <li class="list-group-item"><a href="{% url 'liste_groupes' %}">Liste des groupes</a></li>
+        <li class="list-group-item"><a href="{% url 'liste_seances' %}">Liste des Séances</a></li>
+        <li class="list-group-item"><a href="{% url 'liste_salles' %}">Liste des Salles</a></li>
+    </ul>
+
+    <nav>
+        <ul class="list-group">
+            <li class="list-group-item"><a href="{% url 'liste_disponibilites_enseignants' %}">Dispo Enseignants</a></li>
+            <li class="list-group-item"><a href="{% url 'liste_disponibilites_salles' %}">Dispo Salles</a></li>
+        </ul>
+    </nav>
+</div>
+
+<!-- Lien vers les scripts JavaScript de Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
