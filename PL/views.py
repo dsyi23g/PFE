@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect
 from .models import *
-from .models import DisponibiliteEnseignant, DisponibiliteSalle
-from .forms import DisponibiliteEnseignantForm, DisponibiliteSalleForm
 from .forms import  EnseignantForm, ModuleForm, FiliereForm, SalleForm, GroupeForm, SeanceForm
 from django.http import HttpResponse
 import datetime
@@ -15,7 +13,10 @@ from django.db.models import Q
 from ortools.sat.python import cp_model
 def accueil(request):
     return render(request, 'accueil.html')
-
+def home(request):
+    return render(request, 'home.html')
+def acc_res(request):
+    return render(request, 'acc-res.html')
 
 # def visualiser_emploi_du_temps(request):
 #      seances = Seance.objects.all().select_related('module', 'groupe__filiere', 'salle', 'enseignant')
@@ -423,68 +424,6 @@ def supprimer_entite(request, model, pk, redirect_url):
     instance.delete()
     return redirect(redirect_url)
 
-from .models import DisponibiliteEnseignant, DisponibiliteSalle
-
-def afficher_contraintes(request):
-    contraintes_ens = DisponibiliteEnseignant.objects.all()
-    contraintes_salles = DisponibiliteSalle.objects.all()
-    return render(request, 'contraintes.html', {
-        'contraintes_ens': contraintes_ens,
-        'contraintes_salles': contraintes_salles,
-    })
-
-
-
-
-# ENSEIGNANT
-def liste_disponibilites_enseignants(request):
-    disponibilites = DisponibiliteEnseignant.objects.all()
-    return render(request, 'disponibilites/liste_enseignants.html', {'disponibilites': disponibilites})
-
-def ajouter_disponibilite_enseignant(request):
-    form = DisponibiliteEnseignantForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('liste_disponibilites_enseignants')
-    return render(request, 'form.html', {'form': form})
-
-def modifier_disponibilite_enseignant(request, pk):
-    dispo = get_object_or_404(DisponibiliteEnseignant, pk=pk)
-    form = DisponibiliteEnseignantForm(request.POST or None, instance=dispo)
-    if form.is_valid():
-        form.save()
-        return redirect('liste_disponibilites_enseignants')
-    return render(request, 'form.html', {'form': form})
-
-def supprimer_disponibilite_enseignant(request, pk):
-    dispo = get_object_or_404(DisponibiliteEnseignant, pk=pk)
-    dispo.delete()
-    return redirect('liste_disponibilites_enseignants')
-
-# SALLE
-def liste_disponibilites_salles(request):
-    disponibilites = DisponibiliteSalle.objects.all()
-    return render(request, 'disponibilites/liste_salles.html', {'disponibilites': disponibilites})
-
-def ajouter_disponibilite_salle(request):
-    form = DisponibiliteSalleForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('liste_disponibilites_salles')
-    return render(request, 'form.html', {'form': form})
-
-def modifier_disponibilite_salle(request, pk):
-    dispo = get_object_or_404(DisponibiliteSalle, pk=pk)
-    form = DisponibiliteSalleForm(request.POST or None, instance=dispo)
-    if form.is_valid():
-        form.save()
-        return redirect('liste_disponibilites_salles')
-    return render(request, 'form.html', {'form': form})
-
-def supprimer_disponibilite_salle(request, pk):
-    dispo = get_object_or_404(DisponibiliteSalle, pk=pk)
-    dispo.delete()
-    return redirect('liste_disponibilites_salles')
     
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import landscape, A4
@@ -574,7 +513,7 @@ def exporter_pdf(request, filiere_id):
     jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
 
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="Emploi_{filiere.nom}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="Emploi_{filiere.nom}_{filiere.semestre}.pdf"'
 
     doc = SimpleDocTemplate(response, pagesize=landscape(A4))
     elements = []
@@ -598,7 +537,7 @@ def exporter_pdf(request, filiere_id):
             contenu = ""
             for seance in seances:
                 if seance.jour == jour and seance.heure_debut.strftime("%H:%M") == debut:
-                    contenu += f"{seance.module.nom}\n{seance.groupe.nom}\n{seance.salle.nom}\n{seance.enseignant.nom}\n({seance.type_seance})\n\n"
+                    contenu += f"{seance.module.nom}--{seance.groupe.nom}--{seance.salle.nom}--{seance.enseignant.nom}--({seance.type_seance})\n"
             row.append(contenu.strip())
         data.append(row)
 
@@ -632,6 +571,191 @@ def exporter_pdf(request, filiere_id):
         ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
         
         # Padding
+        ('LEFTPADDING', (0,0), (-1,-1), 3),
+        ('RIGHTPADDING', (0,0), (-1,-1), 3),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+    ]))
+
+    elements.append(table)
+    doc.build(elements)
+
+    return response
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
+# Vue pour la page d'accueil de l'admin
+@login_required
+def accueil(request):
+    # Vérifie si l'utilisateur est un superuser
+    if request.user.is_superuser:
+        return render(request, 'accueil.html')  # Page d'accueil de l'admin
+    else:
+        return redirect('login')  # Redirige vers la page de connexion si ce n'est pas un superuser
+
+
+
+def get_salles_libres():
+    resultats = []
+    toutes_salles = Salle.objects.all()
+
+    for jour in jours:
+      for heure_debut, heure_fin in creneaux:
+        # Filtrer les séances qui ont lieu au même jour et dans le même créneau
+        seances_occupees = Seance.objects.filter(
+            jour=jour,
+            heure_debut=heure_debut,
+            heure_fin=heure_fin
+        )
+
+        salles_occupees = Salle.objects.filter(
+            id__in=seances_occupees.values_list('salle_id', flat=True)
+        )
+
+        salles_libres = toutes_salles.exclude(id__in=salles_occupees)
+
+        resultats.append({
+    'jour': jour,
+    'heure_debut': heure_debut.strftime('%H:%M'),
+    'heure_fin': heure_fin.strftime('%H:%M'),
+    'salles_libres': salles_libres
+})
+
+    return resultats
+
+def liste_salles_disponibles(request):
+    disponibles = get_salles_libres()
+    return render(request, 'salles_libres.html', {'disponibles': disponibles, 'titre': 'salles dispo'})
+
+def reserver_salle(request, salle_id, jour, heure_debut, heure_fin):
+    salle = get_object_or_404(Salle, id=salle_id)
+    
+    # Récupérer l'enseignant connecté depuis la session
+    enseignant_id = request.session.get('enseignant_id')
+    if not enseignant_id:
+        return redirect('enseignant_login')  # Rediriger si non connecté
+
+    enseignant = get_object_or_404(Enseignant, id=enseignant_id)
+
+    if request.method == 'POST':
+        form = SeanceForm(request.POST)
+        if form.is_valid():
+            seance = form.save(commit=False)
+            seance.salle = salle
+            seance.jour = jour
+            seance.heure_debut = heure_debut
+            seance.heure_fin = heure_fin
+            seance.enseignant = enseignant  # Associer l'enseignant ici
+            seance.save()
+            return redirect('liste_seances')  # Redirection après la réservation
+    else:
+        form = SeanceForm(initial={
+            'salle': salle,
+            'jour': jour,
+            'heure_debut': heure_debut,
+            'heure_fin': heure_fin,
+            'enseignant': enseignant,
+        })
+
+    return render(request, 'form.html', {
+        'form': form,
+        'salle': salle,
+        'jour': jour,
+        'heure_debut': heure_debut,
+        'heure_fin': heure_fin,
+    })
+
+from .forms import EnseignantLoginForm
+def dashboard_enseignant(request):
+    enseignant_id = request.session.get('enseignant_id')
+    enseignant = get_object_or_404(Enseignant, id=enseignant_id)
+
+    seances = Seance.objects.filter(enseignant=enseignant)
+    
+    context = {
+        'enseignant': enseignant,
+        'jours': ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi','Samedi'],
+        'creneaux': [('08:30', '10:30'), ('10:45', '13:45'),  ('14:00', '16:00'), ('16:15', '18:15')],
+        'seances': seances,
+        'filiere': None,  # à définir si nécessaire pour filtrer par filière
+    }
+
+    return render(request, 'acc-res.html', context)
+def enseignant_login(request):
+    error = None
+    if request.method == 'POST':
+        form = EnseignantLoginForm(request.POST)
+        if form.is_valid():
+            nom = form.cleaned_data['nom']
+            email = form.cleaned_data['email']
+            try:
+                enseignant = Enseignant.objects.get(nom=nom, email=email)
+                request.session['enseignant_id'] = enseignant.id  # Stocker l'ID dans la session
+                return redirect('dashboard_enseignant')  # Rediriger vers le tableau de bord
+            except Enseignant.DoesNotExist:
+                error = "Nom ou email incorrect."
+    else:
+        form = EnseignantLoginForm()
+    return render(request, 'registration/login.html', {'form': form, 'error': error})
+
+
+def exporter_pdf_enseignant(request):
+    enseignant_id = request.session.get('enseignant_id')  # ou request.user.id si vous utilisez le système d'auth standard
+    enseignant = get_object_or_404(Enseignant, id=enseignant_id)
+
+    seances = Seance.objects.filter(enseignant=enseignant).select_related('module', 'groupe', 'salle').order_by('jour', 'heure_debut')
+
+    creneaux = [
+        ('08:30', '10:30'),
+        ('10:45', '12:45'),
+        ('14:00', '16:00'),
+        ('16:15', '18:15')
+    ]
+    jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Emploi_{enseignant.nom}.pdf"'
+
+    doc = SimpleDocTemplate(response, pagesize=landscape(A4))
+    elements = []
+    styles = getSampleStyleSheet()
+
+    titre_style = styles['Title']
+    titre_style.fontSize = 14
+    titre = Paragraph(f"<strong>Emploi du temps de {enseignant.nom}</strong>", titre_style)
+    elements.append(titre)
+    elements.append(Spacer(1, 12))
+
+    data = [['Jour/Horaire'] + [f"{debut}\n{fin}" for debut, fin in creneaux]]
+
+    for jour in jours:
+        row = [jour]
+        for debut, fin in creneaux:
+            contenu = ""
+            for seance in seances:
+                if seance.jour == jour and seance.heure_debut.strftime("%H:%M") == debut:
+                    contenu += f"{seance.module.nom} | {seance.groupe.nom} | {seance.salle.nom} ({seance.type_seance})\n"
+            row.append(contenu.strip())
+        data.append(row)
+
+    col_widths = [80] + [120] * len(creneaux)
+    row_heights = [30] + [60] * len(jours)
+
+    table = Table(data, colWidths=col_widths, rowHeights=row_heights, repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#f2f2f2")),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.black),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,0), 8),
+        ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
+        ('FONTNAME', (0,1), (-1,-1), 'Helvetica'),
+        ('FONTSIZE', (0,1), (-1,-1), 7),
+        ('BOX', (0,0), (-1,-1), 1, colors.black),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
         ('LEFTPADDING', (0,0), (-1,-1), 3),
         ('RIGHTPADDING', (0,0), (-1,-1), 3),
         ('TOPPADDING', (0,0), (-1,-1), 4),

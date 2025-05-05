@@ -1,0 +1,68 @@
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Liste des {{ titre }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .table-container {
+      width: 70%;
+      margin: 50px auto;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    thead th {
+      background-color: #343a40;
+      color: #fff;
+      text-align: center;
+    }
+
+    tbody td {
+      text-align: center;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+<div class="table-container">
+  <h2 class="text-center text-primary mb-4">Liste des {{ titre }}</h2>
+
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr>
+        {% for champ in entites.0.db.fields %}
+          <th>{{ champ.verbose_name }}</th>
+        {% endfor %}
+        <th>{{ titre }}</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for dispo in disponibles %}
+        {% for salle in dispo.salles_libres %}
+        <tr>
+        <td>{{ dispo.jour }} | ({{ dispo.heure_debut }}--{{ dispo.heure_fin}}) | {{ salle.nom }} ({{ salle.type_salle }})</td>
+          
+        <td> <a href="{% url 'reserver_salle' salle.id dispo.jour dispo.heure_debut dispo.heure_fin %}" class="btn btn-success btn-sm">
+            Réserver
+          </a></td>
+          
+        </tr>
+        {% endfor %}
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
+

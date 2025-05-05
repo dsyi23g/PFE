@@ -19,10 +19,10 @@ class Filiere(models.Model):
 
 class Enseignant(models.Model):
     nom = models.CharField(max_length=100)
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
 
     def __str__(self):
-        return self.nom
+        return f"{self.nom} ({self.email})"
 
 class Module(models.Model):
     nom = models.CharField(max_length=100)
@@ -40,17 +40,6 @@ class Salle(models.Model):
     def __str__(self):
         return self.nom
 
-class DisponibiliteEnseignant(models.Model):
-    enseignant = models.ForeignKey(Enseignant, on_delete=models.CASCADE)
-    jour = models.CharField(max_length=10)  
-    heure_debut = models.TimeField()
-    heure_fin = models.TimeField()
-
-class DisponibiliteSalle(models.Model):
-    salle = models.ForeignKey(Salle, on_delete=models.CASCADE)
-    jour = models.CharField(max_length=10)
-    heure_debut = models.TimeField()
-    heure_fin = models.TimeField()
 
 class Groupe(models.Model):
     nom = models.CharField(max_length=100)

@@ -20,8 +20,6 @@
         <li class="list-group-item"><a href="{% url 'ajouter_salle' %}">Ajouter Salle</a></li>
         <li class="list-group-item"><a href="{% url 'ajouter_groupe' %}">Ajouter Groupe</a></li>
         <li class="list-group-item"><a href="{% url 'ajouter_seance' %}">Ajouter Séance</a></li>
-        <li class="list-group-item"><a href="{% url 'ajouter_disponibilite_enseignant' %}">Disponibilité Enseignant</a></li>
-        <li class="list-group-item"><a href="{% url 'ajouter_disponibilite_salle' %}">Disponibilité Salle</a></li>
     </ul>
 
     
@@ -38,10 +36,13 @@
       </form>
     
       <a href="{% url 'emploi' %}" class="btn btn-info">Voir emploi du temps</a>
+      
+      <form action="{% url 'logout' %}" method="post" class="m-0">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Se déconnecter </button>
+      </form>
     
-      <a href="{% url 'export_excel' %}" class="btn btn-warning">Exporter Excel</a>
     
-      <a href="{% url 'export_pdf' %}" class="btn btn-danger">Exporter PDF</a>
     
     </div>
     
@@ -58,8 +59,7 @@
 
     <nav>
         <ul class="list-group">
-            <li class="list-group-item"><a href="{% url 'liste_disponibilites_enseignants' %}">Dispo Enseignants</a></li>
-            <li class="list-group-item"><a href="{% url 'liste_disponibilites_salles' %}">Dispo Salles</a></li>
+          <li class="list-group-item"><a href="{% url 'liste_salles_disponibles' %}"> Salles Dispo </a></li>
         </ul>
     </nav>
 </div>

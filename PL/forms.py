@@ -1,6 +1,6 @@
 from django import forms
 from .models import Filiere, Enseignant, Module, Salle, Groupe, Seance
-from .models import DisponibiliteEnseignant, DisponibiliteSalle, EmploiDuTemps
+from .models import  EmploiDuTemps
 
 class FiliereForm(forms.ModelForm):
     class Meta:
@@ -33,12 +33,8 @@ class SeanceForm(forms.ModelForm):
         fields = '__all__'
 
 
-class DisponibiliteEnseignantForm(forms.ModelForm):
-    class Meta:
-        model = DisponibiliteEnseignant
-        fields = ['enseignant', 'jour', 'heure_debut', 'heure_fin']
+class EnseignantLoginForm(forms.Form):
+    nom = forms.CharField(label="Nom")
+    email = forms.EmailField(label="Email")
 
-class DisponibiliteSalleForm(forms.ModelForm):
-    class Meta:
-        model = DisponibiliteSalle
-        fields = ['salle', 'jour', 'heure_debut', 'heure_fin']
+

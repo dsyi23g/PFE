@@ -28,11 +28,8 @@
                             {% for seance in seances %}
                                 {% if seance.groupe.filiere == filiere and seance.jour == jour and seance.heure_debut|time:"H:i" == debut %}
                                     <div style="margin:2px; padding:3px; background-color:#f0f0f0; border-radius:3px;">
-                                        <strong>{{ seance.module.nom }}</strong><br>
-                                        {{ seance.groupe.nom }}<br>
-                                        {{ seance.salle.nom }}<br>
-                                        {{ seance.enseignant.nom }}<br>
-                                        <small>({{ seance.type_seance }})</small>
+                                        {{ seance.type_seance }}--{{ seance.groupe.nom }}--{{ seance.salle.nom }}|<strong>{{ seance.module.nom }} //{{seance.groupe.filiere.nom}}</strong>|{{ seance.enseignant.nom }} <br>
+                                        
                                     </div>
                                 {% endif %}
                             {% endfor %}
