@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Emploi du Temps PDF</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px;}
+        th, td { border: 1px solid #000; text-align: center; padding: 4px;}
+        th { background: #f0f0f0; }
+        h2, h3 { text-align: center; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h2>Emploi du temps</h2>
+
+    {% for filiere in filieres %}
+        <h3>Filière : {{ filiere.nom }} — Semestre : {{ filiere.semestre }}</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Jour / Heure</th>
+                    {% for debut, fin in creneaux %}
+                        <th>{{ debut }} - {{ fin }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for jour in jours %}
+                    <tr>
+                        <th>{{ jour }}</th>
+                        {% for debut, fin in creneaux %}
+                            <td>
+                                {% with key=filiere.nom|add:" - "|add:filiere.semestre %}
+                                    {% with creneau=debut|add:"-"|add:fin %}
+                                        {% for seance in emploi_du_temps[key].get(jour, {}).get(creneau, []) %}
+                                          {{ seance.type_seance }}--{{ seance.groupe.nom }}--{{ seance.salle.nom }}|<strong>{{ seance.module.nom }} //{{seance.groupe.filiere.nom}}</strong>|{{ seance.enseignant.nom }}<br>
+
+                                        {% endfor %}
+                                    {% endwith %}
+                                {% endwith %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+</body>
+</html>

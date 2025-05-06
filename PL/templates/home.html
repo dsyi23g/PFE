@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenue - Planification des Séances</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #000000;
+            color: white;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 30px;
+            gap: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 300px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card h2 {
+            font-size: 22px;
+            margin: 15px 0;
+            color: #333;
+        }
+
+        .button {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 12px 24px;
+            background-color: #183c63;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            background-color: #000000;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Bienvenue sur la plateforme de planification des séances</h1>
+    </header>
+
+    <div class="container"> 
+       <!-- Carte Administrateur -->
+       <div class="card">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop" alt="Administrator working">
+            <h2>Espace Administrateur</h2>
+            <a href="/accueil" class="button">Accéder à l'admin</a> <!-- Changez ici pour rediriger vers /admin -->
+        </div>
+        
+        <!-- Carte Enseignant -->
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095" alt="Enseignant">
+            <h2>Espace Enseignant</h2>
+            <a href="/acc-res" class="button">Se connecter</a>
+        </div>
+
+        <!-- Carte Étudiant -->
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1" alt="Étudiant en cours à l'université">
+            <h2>Espace Étudiant</h2>
+            <a href="/emploi" class="button">Consulter</a>
+        </div>
+
+        
+    </div>
+
+    
+
+    <footer>
+        &copy; 2025 Université - Gestion des Emplois du Temps
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+{% load custom_tags %}
+
+{% block content %}
+  <h2>Disponibilités des Salles</h2>
+
+  <table border="1">
+    <tr>
+      <th>Salle</th>
+      <th>Jour</th>
+      <th>Créneau</th>
+      <th>Actions</th>
+    </tr>
+    {% for dispo in disponibilites %}
+    <tr>
+      <td>{{ dispo.salle.nom }}</td>
+      <td>{{ dispo.jour }}</td>
+      <td>{{ dispo.heure_debut }} - {{ dispo.heure_fin }}</td>
+      <td>
+        <a href="{% url 'modifier_disponibilite_salle' pk=dispo.pk %}">Modifier</a> |
+        <a href="{% url 'supprimer_disponibilite_salle' pk=dispo.pk %}">Supprimer</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  
+{% endblock %}

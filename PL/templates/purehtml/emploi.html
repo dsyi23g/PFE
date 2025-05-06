@@ -1,0 +1,59 @@
+<h2>Emploi du temps</h2>
+
+{% for filiere in filieres %}
+    <h3>Filière : {{ filiere.nom }} — Semestre : {{ filiere.semestre }}</h3>
+
+    <!-- Bouton Export PDF -->
+    <a href="{% url 'export_pdf' filiere.id %}" 
+       class="btn btn-danger" 
+       style="margin-bottom: 15px; display: inline-block; padding: 6px 12px; color: white; background-color: #dc3545; text-decoration: none; border-radius: 4px;">
+       📄 Exporter en PDF
+    </a>
+
+    <table border="1" cellspacing="0" cellpadding="5" style="width:100%; margin-bottom:30px;">
+        <thead>
+            <tr>
+                <th>Jour/Horaire</th>
+                {% for debut, fin in creneaux %}
+                    <th>{{ debut }}<br>{{ fin }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for jour in jours %}
+                <tr>
+                    <td><strong>{{ jour }}</strong></td>
+                    {% for debut, fin in creneaux %}
+                        <td>
+                            {% for seance in seances %}
+                                {% if seance.groupe.filiere == filiere and seance.jour == jour and seance.heure_debut|time:"H:i" == debut %}
+                                    <div style="margin:2px; padding:3px; background-color:#f0f0f0; border-radius:3px;">
+                                        {{ seance.type_seance }}--{{ seance.groupe.nom }}--{{ seance.salle.nom }}|<strong>{{ seance.module.nom }} //{{seance.groupe.filiere.nom}}</strong>|{{ seance.enseignant.nom }} <br>
+                                        
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endfor %}
+
+<style>
+    table {
+        border-collapse: collapse;
+        font-family: Arial, sans-serif;
+    }
+    th {
+        background-color: #f2f2f2;
+        text-align: center;
+        padding: 8px;
+    }
+    td {
+        vertical-align: top;
+        min-width: 120px;
+        height: 80px;
+    }
+</style>
